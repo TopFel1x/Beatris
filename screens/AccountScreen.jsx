@@ -9,10 +9,10 @@ export default function AccountScreen() {
 
       <View style={styles.infoContainer}>
         <Text style={styles.label}>Имя:</Text>
-        <Text style={styles.value}>Анастасия</Text>
+        <Text style={styles.value}>Феликс</Text>
 
         <Text style={styles.label}>Email:</Text>
-        <Text style={styles.value}>anastasia@example.com</Text>
+        <Text style={styles.value}>felix@example.com</Text>
       </View>
 
       <TouchableOpacity style={styles.button}>

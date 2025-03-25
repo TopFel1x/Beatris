@@ -7,18 +7,55 @@ import {
   TouchableOpacity,
   SafeAreaView,
   FlatList,
+  Platform,
+  StatusBar,
+  ActivityIndicator,
 } from "react-native"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useState, useEffect } from "react"
 
 // Components
 import SearchBar from "../components/SearchBar"
 import ProductCard from "../components/ProductCard"
 
-// Data
-import { productData } from "../data/products"
-
 const categories = ["Все", "Лицо", "Губы", "Глаза", "Уход", "Новинки"]
 
 export default function CatalogScreen() {
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const STORAGE_KEY = "cachedProducts"
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        // Пробуем загрузить из локального хранилища
+        const cachedData = await AsyncStorage.getItem(STORAGE_KEY)
+        if (cachedData) {
+          setProducts(JSON.parse(cachedData))
+          setLoading(false)
+        }
+
+        // Если на локальном нет, то обращаемся к API
+        const linkProducts =
+          "https://makeup-api.herokuapp.com/api/v1/products.json?brand=l%27oreal"
+        const response = await fetch(linkProducts)
+        const data = await response.json()
+
+        setProducts(data)
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+      } catch {
+        console.error("Ошибка загрузки:", err)
+        setError("Не удалось загрузить данные")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
+  }, [])
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
@@ -43,14 +80,28 @@ export default function CatalogScreen() {
       </View>
 
       {/* Список товаров */}
-      <FlatList
-        data={productData}
-        numColumns={2}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <ProductCard {...item} />}
-        contentContainerStyle={styles.productsContainer}
-        showsVerticalScrollIndicator={false}
-      />
+      {loading && (
+        <ActivityIndicator
+          size="large"
+          color="#999"
+          style={{ marginTop: 20 }}
+        />
+      )}
+      {error && (
+        <Text style={{ textAlign: "center", color: "red" }}>{error}</Text>
+      )}
+      {loading === false && (
+        <FlatList
+          data={products}
+          numColumns={2}
+          keyExtractor={(product) => product.id.toString()}
+          renderItem={({ item }) => (
+            <ProductCard {...item} image={item.image_link} />
+          )}
+          contentContainerStyle={styles.productsContainer}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
     </SafeAreaView>
   )
 }
@@ -62,7 +113,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 10 : 16,
     paddingBottom: 8,
     backgroundColor: "#FAFAFA",
   },

@@ -1,12 +1,28 @@
 import React from "react"
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native"
+import { Text, Image, StyleSheet, TouchableOpacity } from "react-native"
 
 export default function ProductCard({ name, price, image }) {
+  function renderImage() {
+    if (typeof image === "string") {
+      return (
+        <Image
+          source={{ uri: image }}
+          style={styles.image}
+          resizeMode="contain"
+        />
+      )
+    } else if (typeof image === "number") {
+      return <Image source={image} style={styles.image} resizeMode="contain" />
+    }
+
+    return <Text style={{ color: "red" }}>❌ Нет изображения</Text>
+  }
+
   return (
     <TouchableOpacity style={styles.card}>
-      <Image source={image} style={styles.image} resizeMode="contain" />
+      {renderImage()}
       <Text style={styles.name}>{name}</Text>
-      <Text style={styles.price}>{price}₸</Text>
+      <Text style={styles.price}>{price * 500}₸</Text>
     </TouchableOpacity>
   )
 }

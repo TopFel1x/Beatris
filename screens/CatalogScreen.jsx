@@ -13,14 +13,25 @@ import {
 } from "react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useState, useEffect } from "react"
+import { useNavigation } from "@react-navigation/native"
 
 // Components
 import SearchBar from "../components/SearchBar"
 import ProductCard from "../components/ProductCard"
 
-const categories = ["Все", "Лицо", "Губы", "Глаза", "Уход", "Новинки"]
+const categories = [
+  { label: "Все", value: "all" },
+  { label: "Тон", value: "foundation" },
+  { label: "Помады", value: "lipstick" },
+  { label: "Туши", value: "mascara" },
+  { label: "Тени", value: "eyeshadow" },
+  { label: "Подводки", value: "eyeliner" },
+  { label: "Румяна", value: "blush" },
+]
 
 export default function CatalogScreen() {
+  const navigation = useNavigation()
+
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -56,13 +67,30 @@ export default function CatalogScreen() {
     fetchProducts()
   }, [])
 
+  // Фильтрации поисковой строки <SearchBar>
+  const [searchQuery, setSearchQuery] = useState("")
+
+  // Фильтрации горизонтальных пропруктку (по типу)
+  const [selectedCategory, setSelectedCategory] = useState("all")
+
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+
+    const matchesCategory =
+      selectedCategory === "all" || product.product_type === selectedCategory
+
+    return matchesSearch && matchesCategory
+  })
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.pageName}>Каталог</Text>
 
-        <SearchBar />
+        <SearchBar value={searchQuery} onChange={setSearchQuery} />
 
         <ScrollView
           horizontal
@@ -70,8 +98,22 @@ export default function CatalogScreen() {
           style={styles.categoriesContainer}
         >
           {categories.map((cat, index) => (
-            <TouchableOpacity key={index} style={styles.categoryButton}>
-              <Text style={styles.categoryText}>{cat}</Text>
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.categoryButton,
+                selectedCategory === cat.value && styles.activeCategoryButton,
+              ]}
+              onPress={() => setSelectedCategory(cat.value)}
+            >
+              <Text
+                style={[
+                  styles.categoryText,
+                  selectedCategory === cat.value && styles.activeCategoryText,
+                ]}
+              >
+                {cat.label}
+              </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -92,11 +134,19 @@ export default function CatalogScreen() {
       )}
       {loading === false && (
         <FlatList
-          data={products}
+          data={filteredProducts}
           numColumns={2}
           keyExtractor={(product) => product.id.toString()}
           renderItem={({ item }) => (
-            <ProductCard {...item} image={item.image_link} />
+            <View style={styles.cardWrapper}>
+              <ProductCard
+                {...item}
+                image={item.image_link}
+                onPress={() =>
+                  navigation.navigate("ProductDetails", { product: item })
+                }
+              />
+            </View>
           )}
           contentContainerStyle={styles.productsContainer}
           showsVerticalScrollIndicator={false}
@@ -139,11 +189,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#333",
   },
+  activeCategoryButton: {
+    backgroundColor: "rgba(231, 198, 204, 0.7)",
+    borderColor: "#e7c6cc",
+  },
+  activeCategoryText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
 
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
+  },
+
+  cardWrapper: {
+    flex: 1,
+    maxWidth: "50%",
   },
 
   productsContainer: {

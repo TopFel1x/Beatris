@@ -1,7 +1,7 @@
 import React from "react"
 import { Text, Image, StyleSheet, TouchableOpacity } from "react-native"
 
-export default function ProductCard({ name, price, image }) {
+export default function ProductCard({ name, price, image, onPress }) {
   function renderImage() {
     if (typeof image === "string") {
       return (
@@ -19,7 +19,7 @@ export default function ProductCard({ name, price, image }) {
   }
 
   return (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={onPress}>
       {renderImage()}
       <Text style={styles.name}>{name}</Text>
       <Text style={styles.price}>{price * 500}₸</Text>

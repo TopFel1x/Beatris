@@ -1,4 +1,12 @@
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native"
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  StatusBar,
+  Platform,
+} from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 // Components
@@ -12,7 +20,13 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View
+        style={[styles.header, { paddingTop: Platform.OS === "ios" ? 10 : 0 }]}
+      >
+        <StatusBar
+          barStyle={Platform.OS === "ios" ? "dark-content" : "light-content"}
+          backgroundColor={Platform.OS === "android" ? "#000" : "transparent"}
+        />
         <Text style={styles.logo}>Beatris</Text>
       </View>
 

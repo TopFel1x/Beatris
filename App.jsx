@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, Platform } from "react-native"
+import { StyleSheet } from "react-native"
 import { NavigationContainer } from "@react-navigation/native"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { Ionicons } from "@expo/vector-icons"
@@ -12,6 +12,9 @@ import HomeScreen from "./screens/HomeScreen"
 import FavoritesScreen from "./screens/FavoritesScreen"
 import CartScreen from "./screens/CartScreen"
 import AccountScreen from "./screens/AccountScreen"
+
+// Context
+import { CartProvider } from "./context/CartContext"
 
 const Tab = createBottomTabNavigator()
 
@@ -50,15 +53,17 @@ const tabScreenOptions = ({ route }) => ({
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Tab.Navigator screenOptions={tabScreenOptions}>
-        <Tab.Screen name="Главная" component={HomeScreen} />
-        <Tab.Screen name="Каталог" component={CatalogStack} />
-        <Tab.Screen name="Избранное" component={FavoritesScreen} />
-        <Tab.Screen name="Корзина" component={CartScreen} />
-        <Tab.Screen name="Аккаунт" component={AccountScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <CartProvider>
+      <NavigationContainer>
+        <Tab.Navigator screenOptions={tabScreenOptions}>
+          <Tab.Screen name="Главная" component={HomeScreen} />
+          <Tab.Screen name="Каталог" component={CatalogStack} />
+          <Tab.Screen name="Избранное" component={FavoritesScreen} />
+          <Tab.Screen name="Корзина" component={CartScreen} />
+          <Tab.Screen name="Аккаунт" component={AccountScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </CartProvider>
   )
 }
 

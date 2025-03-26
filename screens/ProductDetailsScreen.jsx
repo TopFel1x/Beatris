@@ -1,7 +1,21 @@
 import React from "react"
-import { View, Text, Image, StyleSheet, ScrollView } from "react-native"
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Platform,
+  Alert,
+  Vibration,
+} from "react-native"
+
+import { useCart } from "../context/CartContext"
 
 export default function ProductDetailsScreen({ route }) {
+  const { addToCart } = useCart()
+
   const product = route.params.product
 
   return (
@@ -17,6 +31,21 @@ export default function ProductDetailsScreen({ route }) {
       <Text style={styles.description}>
         {product.description || "Нет описания"}
       </Text>
+
+      <TouchableOpacity
+        style={styles.addToCartButton}
+        onPress={() => {
+          if (Platform.OS === "ios") {
+            Alert.alert("Товар добавлен в корзину")
+          } else if (Platform.OS === "android") {
+            Vibration.vibrate(100)
+          }
+
+          addToCart(product)
+        }}
+      >
+        <Text style={styles.addToCartText}>Добавить в корзину</Text>
+      </TouchableOpacity>
     </ScrollView>
   )
 }
@@ -53,5 +82,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     color: "#555",
+  },
+
+  addToCartButton: {
+    marginTop: 14,
+    backgroundColor: "#d8a8bf",
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#d8b4dc",
+  },
+  addToCartText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 })

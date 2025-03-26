@@ -9,16 +9,20 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context"
 
 // Компонент карточки товара
-import ProductCard from "../components/ProductCard"
+import CartItem from "../components/CartItem"
+
+// Context
+import { useCart } from "../context/CartContext"
 
 // Data
-import { cartItems } from "../data/cartItems"
+// import { cartItems } from "../data/cartItems"
 
 // Временно захардкоженные товары в корзине
 
 export default function CartScreen() {
   // Вычисление общей суммы
-  const total = cartItems.reduce((sum, item) => sum + item.price, 0)
+  const { cartItems } = useCart()
+  const total = cartItems.reduce((sum, item) => sum + item.price * 500, 0)
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,11 +36,9 @@ export default function CartScreen() {
         <>
           <FlatList
             data={cartItems}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.item}>
-                <ProductCard {...item} />
-              </View>
+            keyExtractor={(item, index) => `${item.id}-${index}`}
+            renderItem={({ item, index }) => (
+              <CartItem item={item} index={index} />
             )}
             contentContainerStyle={styles.list}
           />
@@ -74,6 +76,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#888",
   },
+
+  name: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  price: {
+    fontSize: 14,
+    color: "#666",
+  },
+
   list: {
     paddingBottom: 20,
   },

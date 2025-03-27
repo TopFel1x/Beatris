@@ -31,7 +31,7 @@ export default function HomeScreen() {
       </View>
 
       {/* Search product */}
-      <SearchBar />
+      <SearchBar value="" onChange={() => {}} />
 
       {/* Unique offer */}
       <View style={styles.promo}>

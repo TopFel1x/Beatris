@@ -1,19 +1,18 @@
 import { StyleSheet, View, Text, Image } from "react-native"
 
-export default function PromoCard({
-  image,
-  title,
-  oldPrice,
-  newPrice,
-  discount,
-}) {
+// Utils
+import { getDiscountedPrice } from "../utils/getDiscountedPrice"
+
+export default function PromoCard({ image, title, oldPrice, discount }) {
   return (
     <View style={styles.card}>
       <Image style={styles.cardImage} source={image} />
       <Text style={styles.cardTitle}>{title}</Text>
       <View style={styles.cardPriceRow}>
         <Text style={styles.oldPrice}>{oldPrice}₸</Text>
-        <Text style={styles.newPrice}>{newPrice}₸</Text>
+        <Text style={styles.newPrice}>
+          {getDiscountedPrice(oldPrice, discount)}₸
+        </Text>
         <View style={styles.discountTag}>
           <Text style={styles.discountText}>-{discount}%</Text>
         </View>

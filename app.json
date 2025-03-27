@@ -23,6 +23,18 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "54a59041-5cb2-4d93-b378-c8185127e0e0"
+      }
+    },
+    "owner": "topfel1x",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/54a59041-5cb2-4d93-b378-c8185127e0e0"
     }
   }
 }
